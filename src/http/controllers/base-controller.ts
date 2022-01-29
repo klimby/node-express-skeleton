@@ -1,13 +1,21 @@
 import {
-  Action, Controller, Get,
-  OnUndefined, Param,
+  Action,
+  Body,
+  Controller,
+  Get,
+  JsonController,
+  OnUndefined,
+  Param,
   Post,
-  UseAfter, UseBefore, UseInterceptor } from 'routing-controllers';
+  UseAfter,
+  UseBefore,
+  UseInterceptor,
+} from 'routing-controllers';
 import 'reflect-metadata';
 import { Info }                         from '../../models';
 import { loggingAfter, loggingBefore }  from '../middleware';
 
-@Controller()
+@JsonController()
 export class BaseController {
 
   @UseBefore(loggingBefore)
@@ -23,7 +31,8 @@ export class BaseController {
 
   @Post('/users/:id')
   @OnUndefined(204)
-  postOne ({ id, info }: { id: number, info: Info }) {
+  postOne (@Param('id') id: number, @Body() info: Info) {
     console.log(JSON.stringify(info));
+    return JSON.stringify(info);
   }
 }

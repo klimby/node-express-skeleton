@@ -18,9 +18,14 @@ dotenv.config();
 const port = process.env.PORT;
 
 const app: express.Express = express();
+
 app.use(bodyParser.json());
+
 app.use(httpContext.middleware);
+
 useExpressServer(app, {
+  routePrefix: '/api',
+  classTransformer: true,
   controllers: [BaseController],
 });
 
