@@ -1,0 +1,13 @@
+GET http://localhost:5000/users/1
+
+###
+
+
+### Send POST request with json body
+POST https://localhost:5000/users/1
+Content-Type: application/json
+
+{
+    "country": "Russia",
+    "city": "SPb"
+}
