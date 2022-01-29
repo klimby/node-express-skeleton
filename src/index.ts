@@ -4,6 +4,7 @@ import express, { NextFunction } from 'express';
 import httpContext          from 'express-http-context';
 import { useExpressServer }      from 'routing-controllers';
 import { BaseController }        from './http/controllers';
+import { GlobalErrorHandler } from './http/middleware';
 //import log4js    from 'log4js';
 
 //const logger = log4js.getLogger();
@@ -27,6 +28,8 @@ useExpressServer(app, {
   routePrefix: '/api',
   classTransformer: true,
   controllers: [BaseController],
+  middlewares: [GlobalErrorHandler],
+  defaultErrorHandler: false
 });
 
 app.use((req: express.Request, res: express.Response, next: NextFunction) => {

@@ -1,1 +1,2 @@
-export * from './logging-middlewate';
+export * from './logging-middleware';
+export * from './global-error-handler';
