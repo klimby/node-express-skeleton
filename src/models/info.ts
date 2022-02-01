@@ -2,7 +2,7 @@ import { IsDefined } from "class-validator";
 
 export class Info {
   @IsDefined()
-  country: string = '';
+  country!: string;
   @IsDefined()
-  city: string = '';
+  city!: string;
 }

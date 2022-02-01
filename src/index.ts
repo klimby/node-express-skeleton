@@ -1,10 +1,11 @@
-import bodyParser                from 'body-parser';
-import dotenv                    from 'dotenv';
-import express, { NextFunction } from 'express';
-import httpContext          from 'express-http-context';
-import { useExpressServer }      from 'routing-controllers';
-import { BaseController }        from './http/controllers';
-import { GlobalErrorHandler } from './http/middleware';
+import bodyParser                             from 'body-parser';
+import dotenv                                 from 'dotenv';
+import express, { Application, NextFunction } from 'express';
+import httpContext                            from 'express-http-context';
+import { useExpressServer }                   from 'routing-controllers';
+import { BaseController }                     from './http/controllers';
+import { GlobalErrorHandler }                 from './http/middleware';
+import { Log }                                from './providers';
 //import log4js    from 'log4js';
 
 //const logger = log4js.getLogger();
@@ -18,11 +19,14 @@ dotenv.config();
 
 const port = process.env.PORT;
 
-const app: express.Express = express();
+//const app: express.Express = express();
+const app: Application = express();
 
 app.use(bodyParser.json());
 
 app.use(httpContext.middleware);
+
+Log.info('sdf');
 
 useExpressServer(app, {
   routePrefix: '/api',
@@ -37,9 +41,6 @@ app.use((req: express.Request, res: express.Response, next: NextFunction) => {
   httpContext.ns.bindEmitter(res);
 });
 
-/*const app = createExpressServer({
- controllers: [BaseController], // we specify controllers we want to use
- });*/
 
 app.listen(port, () => console.log(`Running on port ${port}`));
 
