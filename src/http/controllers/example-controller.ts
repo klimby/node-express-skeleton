@@ -12,11 +12,11 @@ import {
   UseInterceptor,
 } from 'routing-controllers';
 import 'reflect-metadata';
-import { Info }                         from '../../models';
-import { loggingAfter, loggingBefore }  from '../middleware';
+import { Example }                     from '../../models/example';
+import { loggingAfter, loggingBefore } from '../middleware/logging-middleware';
 
 @JsonController()
-export class BaseController {
+export class ExampleController {
 
   @UseBefore(loggingBefore)
   @UseAfter(loggingAfter)
@@ -31,7 +31,7 @@ export class BaseController {
 
   @Post('/users/:id')
   @OnUndefined(204)
-  postOne (@Param('id') id: number, @Body() info: Info) {
+  postOne (@Param('id') id: number, @Body() info: Example) {
     console.log(JSON.stringify(info));
     return JSON.stringify(info);
   }

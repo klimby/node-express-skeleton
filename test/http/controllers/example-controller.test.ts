@@ -1,10 +1,10 @@
 import bodyParser             from 'body-parser';
 import express    from 'express';
 import { useExpressServer }   from 'routing-controllers';
-import { GlobalErrorHandler } from '../../../src/http/middleware';
-import { Info }               from 'src/models';
-import { BaseController }     from '../../../src/http/controllers';
-import request from 'supertest';
+import { GlobalErrorHandler } from '../../../src/http/middleware/global-error-handler';
+import { Example }              from 'src/models/example';
+import { ExampleController } from '../../../src/http/controllers/example-controller';
+import request               from 'supertest';
 
 describe('UserController', () => {
 
@@ -16,7 +16,7 @@ describe('UserController', () => {
         useExpressServer(server, {
           routePrefix: '/api',
           classTransformer: true,
-          controllers: [BaseController], // we specify controllers we want to use
+          controllers: [ExampleController], // we specify controllers we want to use
           middlewares: [GlobalErrorHandler],
           defaultErrorHandler: false,
         });
@@ -27,11 +27,11 @@ describe('UserController', () => {
       });
 
       it('postOne', () => {
-        const userController = new BaseController();
+        const userController = new ExampleController();
         const testBody = {
-          city: 'SPb',
+          name: 'SPb',
         };
-        const res = userController.postOne(1, testBody as Info);
+        const res = userController.postOne(1, testBody as Example);
         expect(res)
             .toBeDefined();
       });
@@ -40,9 +40,9 @@ describe('UserController', () => {
         request(server)
             .post('/api/users/1')
             .send({
-              country: 'Russia',
-              city: 'SPb',
-            } as Info)
+              name: 'Russia',
+              description: 'SPb',
+            } as Example)
             .expect(204)
             .end((err: any, res: any) => {
               if (err) {

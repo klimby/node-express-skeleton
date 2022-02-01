@@ -1,47 +1,7 @@
-import bodyParser                             from 'body-parser';
-import dotenv                                 from 'dotenv';
-import express, { Application, NextFunction } from 'express';
-import httpContext                            from 'express-http-context';
-import { useExpressServer }                   from 'routing-controllers';
-import { BaseController }                     from './http/controllers';
-import { GlobalErrorHandler }                 from './http/middleware';
-import { Log }                                from './providers';
-//import log4js    from 'log4js';
+import App from './providers/app-provider';
 
-//const logger = log4js.getLogger();
-//logger.level = process.env.LOG_LEVEL as string;
+App.initRoutes();
+App.startServer();
 
-dotenv.config();
-
-//logger.info('log4js log info');
-//logger.debug('log4js log debug');
-//logger.error('log4js log error');
-
-const port = process.env.PORT;
-
-//const app: express.Express = express();
-const app: Application = express();
-
-app.use(bodyParser.json());
-
-app.use(httpContext.middleware);
-
-Log.info('sdf');
-
-useExpressServer(app, {
-  routePrefix: '/api',
-  classTransformer: true,
-  controllers: [BaseController],
-  middlewares: [GlobalErrorHandler],
-  defaultErrorHandler: false
-});
-
-app.use((req: express.Request, res: express.Response, next: NextFunction) => {
-  httpContext.ns.bindEmitter(req);
-  httpContext.ns.bindEmitter(res);
-});
-
-
-app.listen(port, () => console.log(`Running on port ${port}`));
 
 

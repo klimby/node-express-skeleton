@@ -8,6 +8,6 @@ POST http://localhost:5000/api/users/1
 Content-Type: application/json
 
 {
-    "country": "Russia",
-    "city": "SPb"
+    "name": "Russia",
+    "description": "SPb"
 }

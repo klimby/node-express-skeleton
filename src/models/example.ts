@@ -1,8 +1,8 @@
 import { IsDefined } from "class-validator";
 
-export class Info {
+export class Example {
   @IsDefined()
-  country!: string;
+  name!: string;
   @IsDefined()
-  city!: string;
+  description!: string;
 }
