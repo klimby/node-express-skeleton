@@ -27,4 +27,34 @@ export interface AppConfig {
    * App version
    */
   readonly version: string;
+
+  /**
+   * Logger configuration
+   */
+  readonly logs: LogConfig;
+}
+
+
+export enum LogFileFormat {
+  Json = 'json',
+  Text = 'text'
+}
+
+export interface LogConfig {
+
+  /**
+   * Log rotation in days
+   */
+  dayRotation: number;
+
+  /**
+   * Log file content format - text or json
+   */
+  logFileContentFormat: LogFileFormat;
+
+  /**
+   * Use UTC timestamp for log file
+   */
+  utc: boolean;
+
 }

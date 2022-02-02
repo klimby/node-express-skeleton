@@ -1,5 +1,10 @@
 {
     "port": 3000,
     "routePrefix" : "/api",
-    "devMode": false
+    "devMode": false,
+    "logs" : {
+        "dayRotation": 14,
+        "logFileContentFormat": "json",
+        "utc": false
+    }
 }

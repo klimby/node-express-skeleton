@@ -40,7 +40,7 @@ class AppProvider implements ExpressApplication {
    */
   startServer(): void {
     const port = Config.port;
-    this.app.listen(port, () => Log.info(`Running on port ${port}`));
+    this.app.listen(port, () => Log.info(`Running on port ${port}`, {foo: 'bar'}));
   }
 }
 
