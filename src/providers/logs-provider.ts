@@ -1,15 +1,19 @@
 import {
   Format,
   TimestampOptions,
-} from 'logform';
+}                      from 'logform';
 import winston, {
   format,
   Logger,
-}                       from 'winston';
-import { AppConfig }    from '../types/app-config';
-import { AppLog }       from '../types/app-log';
-import Config           from './config-provider';
-import  DailyRotateFile from 'winston-daily-rotate-file';
+}                      from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
+import {
+  AppConfig,
+  LogChannel,
+  LogFileFormat,
+}                      from '../types/app-config';
+import { AppLog }      from '../types/app-log';
+import Config          from './config-provider';
 
 /**
  * Log provider
@@ -30,30 +34,40 @@ class LogsProvider implements AppLog {
    */
   #logger: Logger;
 
-  /**
-   * App config
-   * @private
-   */
-  #config: AppConfig;
+  readonly #logDir = 'logs';
 
   constructor() {
-    this.#config = Config;
+
     this.#logger = winston.createLogger(
         {
           levels: winston.config.syslog.levels,
           level: 'debug',
-          format: winston.format.json(),
-          //     defaultMeta: { service: Config.appName },
-          transports: [
-            new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-          ],
+          exitOnError: false
         },
     );
+  }
 
-    const { combine, timestamp, label, printf, colorize, align, json, metadata } = format;
+  /**
+   * App config
+   */
+  get #config(): AppConfig {
+    return Config;
+  }
 
-    this.#setFileLogger();
-    this.#setConsoleLogger();
+  /**
+   * Init logger and set config. Run in index
+   */
+  init(): void {
+    this.#setExceptionsHandler();
+    this.#setRejectionsHandler();
+
+    if (this.#config.logs.channels.includes(LogChannel.File)) {
+      this.#setFileLogger();
+      this.#setFileErrorLogger();
+    }
+    if (this.#config.logs.channels.includes(LogChannel.Console)) {
+      this.#setConsoleLogger();
+    }
   }
 
   /**
@@ -96,28 +110,97 @@ class LogsProvider implements AppLog {
     this.#logger.error(message, ctx);
   }
 
-  #setFileErrorLogger(): void {
-
+  /**
+   * Aet unhandled exceptions log handler
+   */
+  #setExceptionsHandler(): void {
+    this.#logger.exceptions.handle(
+        new winston.transports.File({
+          filename: 'exceptions.log',
+          dirname: this.#logDir,
+        })
+    );
   }
 
-  #setFileLogger(): void {
+  /**
+   * Set promise rejections log handler
+   */
+  #setRejectionsHandler(): void {
+    this.#logger.rejections.handle(
+        new winston.transports.File({
+          filename: 'rejections.log',
+          dirname: this.#logDir,
+        })
+    );
+  }
 
+  /**
+   * Set error logger
+   */
+  #setFileErrorLogger(): void {
     const { combine, timestamp, label, metadata } = format;
 
-    const fileFormat = this.#getFileJsonFormat();
+    const errorFilter = winston.format((info) => {
+      return ['error', 'crit', 'alert', 'emerg'].includes(info.level) ? info : false;
+    });
+
+    const fileFormat = this.#config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat() : this.#getFileTextFormat();
+    const timestampOptions = this.#getTimestampFileOptions();
+
+    this.#logger.add(new winston.transports.File({
+      level: 'error',
+      filename: 'errors.log',
+      dirname: this.#logDir,
+      format: combine(
+          errorFilter(),
+          metadata(),
+          label({ label: this.#config.appName }),
+          timestamp(timestampOptions),
+          fileFormat,
+      ),
+    }));
+  }
+
+  /**
+   * Set console logger
+   */
+  #setConsoleLogger(): void {
+    const { combine, timestamp, label, colorize, align, metadata } = format;
+    const logFormat = this.#getConsoleFormat();
+    this.#logger.add(new winston.transports.Console({
+      level: 'debug',
+      format: combine(
+          metadata(),
+          label({ label: this.#config.appName }),
+          timestamp(this.#getTimestampConsoleOptions()),
+          align(),
+          logFormat,
+          colorize({ all: true }),
+      ),
+    }));
+  }
+
+  /**
+   * Set logger for file
+   */
+  #setFileLogger(): void {
+    const { combine, timestamp, label, metadata } = format;
+
+    const fileFormat = this.#config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat() : this.#getFileTextFormat();
+    const timestampOptions = this.#getTimestampFileOptions();
 
     const transport: DailyRotateFile = new DailyRotateFile({
       level: 'info',
       filename: 'combined-%DATE%.log',
-      dirname: 'logs',
+      dirname: this.#logDir,
       datePattern: 'YYYY-MM-DD',
       maxFiles: `${this.#config.logs.dayRotation}d`,
       zippedArchive: true,
       auditFile: 'storage/log-audit.json',
       format: combine(
-          timestamp(),
           metadata(),
           label({ label: this.#config.appName }),
+          timestamp(timestampOptions),
           fileFormat,
       ),
     });
@@ -141,16 +224,11 @@ class LogsProvider implements AppLog {
   }
 
   /**
-   * Set console log format
-   * @private
+   * Get format for log file in text style
    */
-  #setConsoleLogger(): void {
-    const { combine, timestamp, label, printf, colorize, align, metadata } = format;
-
-    /**
-     * Set console message format
-     */
-    const consoleFormat = printf(({ level, message, label, timestamp, metadata }) => {
+  #getFileTextFormat(): Format {
+    const { printf } = format;
+    return printf(({ level, message, label, timestamp, metadata }) => {
       let result = `[${timestamp}] ${label}.${level.toUpperCase()}: ${message}`;
       if (metadata) {
         const meta = JSON.stringify(metadata);
@@ -158,24 +236,38 @@ class LogsProvider implements AppLog {
       }
       return result;
     });
-
-    /**
-     * undefined - toISOString()
-     */
-    const timestampOpt: TimestampOptions | undefined =  this.#config.logs.utc ? undefined : {format: 'YYYY-MM-DD HH:mm:ss.SSS'};
-
-    this.#logger.add(new winston.transports.Console({
-      level: 'debug',
-      format: combine(
-          metadata(),
-          label({ label: this.#config.appName }),
-          timestamp(timestampOpt),
-          align(),
-          consoleFormat,
-          colorize({ all: true }),
-      ),
-    }));
   }
+
+  /**
+   * Get console log format
+   */
+  #getConsoleFormat(): Format {
+    const { printf } = format;
+    return printf(({ level, message, label, timestamp, metadata }) => {
+      let result = `[${timestamp}] ${label}.${level.toUpperCase()}: ${message}`;
+      if (metadata) {
+        const meta = JSON.stringify(metadata);
+        result = `${result}. ${meta}`;
+      }
+      return result;
+    });
+  }
+
+  /**
+   * Get timestamp options. Undefined = toISOString()
+   */
+  #getTimestampConsoleOptions(): TimestampOptions | undefined {
+    return this.#config.logs.utc ? undefined : { format: 'YYYY-MM-DD HH:mm:ss.SSS' };
+  }
+
+  /**
+   * Timestamp for file
+   */
+  #getTimestampFileOptions(): TimestampOptions | undefined {
+    return this.#config.logs.utc ? undefined : { format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' };
+  }
+
+
 }
 
 const Log: AppLog = new LogsProvider();

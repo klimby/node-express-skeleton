@@ -4,6 +4,11 @@
 export interface AppLog {
 
   /**
+   * Init logger and set config. Run in index
+   */
+  init(): void;
+
+  /**
    * Send informational log.
    * Informational: informational messages
    * @param message log message

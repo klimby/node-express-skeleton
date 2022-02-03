@@ -1,3 +1,9 @@
+export enum NodeEnv {
+  Production='production',
+  Development='development',
+  Testing='testing',
+}
+
 /**
  * Application config
  */
@@ -19,6 +25,16 @@ export interface AppConfig {
   readonly isProduction: boolean;
 
   /**
+   * Is development mode
+   */
+  readonly isDevelopment: boolean;
+
+  /**
+   * Is testing mode
+   */
+  readonly isTesting: boolean;
+
+  /**
    * App name
    */
   readonly appName: string;
@@ -32,15 +48,53 @@ export interface AppConfig {
    * Logger configuration
    */
   readonly logs: LogConfig;
+
+  /**
+   * Init config. Use in index before all or in tests
+   * @param appConfig partial config (for test cases)
+   */
+  init(appConfig?: Partial<AppConfig>): void;
 }
 
-
+/**
+ * Log file content format
+ */
 export enum LogFileFormat {
+  /**
+   * String as json
+   */
   Json = 'json',
+  /**
+   * Simple string
+   */
   Text = 'text'
 }
 
+/**
+ * Log channels
+ */
+export enum LogChannel {
+
+  /**
+   * Send log to console
+   */
+  Console = 'console',
+
+  /**
+   * Write log files
+   */
+  File = 'file'
+}
+
+/**
+ * Logging config
+ */
 export interface LogConfig {
+
+  /**
+   * Log channels
+   */
+  channels: LogChannel[];
 
   /**
    * Log rotation in days

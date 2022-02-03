@@ -33,14 +33,24 @@ class AppProvider implements ExpressApplication {
       middlewares: [GlobalErrorHandler],
       defaultErrorHandler: false,
     });
+
+    /*process.on('uncaughtException', (error: Error) => {
+      throw error;
+    });*/
   }
 
   /**
    * Start http server
    */
   startServer(): void {
+    this.#clearConsole();
     const port = Config.port;
-    this.app.listen(port, () => Log.info(`Running on port ${port}`, {foo: 'bar'}));
+    this.app.listen(port, () => Log.info(`Running on port ${port}`));
+  }
+
+
+  #clearConsole(): void {
+    process.stdout.write('\x1B[2J\x1B[0f');
   }
 }
 

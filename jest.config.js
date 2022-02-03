@@ -1,4 +1,4 @@
-process.env.NODE_ENV = 'UNITTEST';
+process.env.NODE_ENV = 'testing';
 module.exports = {
   clearMocks: true,
   collectCoverage: true,
