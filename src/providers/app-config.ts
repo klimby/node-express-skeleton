@@ -1,12 +1,13 @@
-import config from 'config';
-import dotenv from 'dotenv';
+import config      from 'config';
+import dotenv      from 'dotenv';
+import { Locales } from '../types/common-types';
 import {
   AppConfig,
   LogChannel,
   LogConfig,
   LogFileFormat,
   NodeEnv,
-}             from '../types/app-config';
+}                  from '../types/config-types';
 
 class ConfigProvider implements AppConfig {
 
@@ -18,7 +19,7 @@ class ConfigProvider implements AppConfig {
   /**
    * Router prefix
    */
-  #routePrefix = '/api';
+  #routePrefix = 'api';
 
   /**
    * App name
@@ -45,9 +46,21 @@ class ConfigProvider implements AppConfig {
    */
   #nodeEnv: NodeEnv = NodeEnv.Production;
 
+  /**
+   * App locale
+   */
+  #locale: Locales = Locales.en;
+
   constructor() {
     dotenv.config();
     this.#setNodeEnv();
+  }
+
+  /**
+   * App locale
+   */
+  get locale(): Locales {
+    return this.#locale;
   }
 
   /**
@@ -110,7 +123,7 @@ class ConfigProvider implements AppConfig {
    * Init config. Use in index before all or in tests
    * @param appConfig partial config (for test cases)
    */
-  init(appConfig?: Partial<AppConfig>) {
+  init(appConfig?: Partial<ConfigProvider>) {
     this.#setPort();
     this.#setPrefix();
     this.#setAppName();
@@ -122,19 +135,19 @@ class ConfigProvider implements AppConfig {
    * Set logs config
    * @param appConfig
    */
-  #setLogs(appConfig?: Partial<AppConfig>): void {
+  #setLogs(appConfig?: Partial<ConfigProvider>): void {
 
-   if(appConfig?.logs?.channels && Array.isArray(appConfig?.logs?.channels)) {
-     this.#logs.channels = appConfig.logs.channels;
-   } else if(config.has('logs.channels') && Array.isArray(config.get('logs.channels'))) {
-     const channels = config.get('logs.channels') as LogChannel[];
-     this.#logs.channels = [];
-     for (const ch of [LogChannel.File, LogChannel.Console]) {
-       if(channels.includes(ch)) {
-         this.#logs.channels.push(ch);
-       }
-     }
-   }
+    if (appConfig?.logs?.channels && Array.isArray(appConfig?.logs?.channels)) {
+      this.#logs.channels = appConfig.logs.channels;
+    } else if (config.has('logs.channels') && Array.isArray(config.get('logs.channels'))) {
+      const channels = config.get('logs.channels') as LogChannel[];
+      this.#logs.channels = [];
+      for (const ch of [LogChannel.File, LogChannel.Console]) {
+        if (channels.includes(ch)) {
+          this.#logs.channels.push(ch);
+        }
+      }
+    }
 
     if (appConfig?.logs?.dayRotation) {
       this.#logs.dayRotation = appConfig.logs.dayRotation;
@@ -176,6 +189,13 @@ class ConfigProvider implements AppConfig {
     }
   }
 
+  #setLocale(): void {
+    if (process.env.LOCALE) {
+      const locale = process.env.LOCALE.toLowerCase();
+      this.#locale = locale === Locales.ru ? Locales.ru : Locales.en;
+    }
+  }
+
   #setPrefix(): void {
     if (config.has('routePrefix')) {
       this.#routePrefix = config.get('routePrefix');
@@ -196,7 +216,7 @@ class ConfigProvider implements AppConfig {
 /**
  * Application config
  */
-const Config: AppConfig = new ConfigProvider();
+const appConfig: AppConfig = new ConfigProvider();
 
-export default Config;
+export default appConfig;
 

@@ -1,3 +1,5 @@
+import { Locales } from './common-types';
+
 export enum NodeEnv {
   Production='production',
   Development='development',
@@ -48,6 +50,11 @@ export interface AppConfig {
    * Logger configuration
    */
   readonly logs: LogConfig;
+
+  /**
+   * App locale
+   */
+  readonly locale: Locales;
 
   /**
    * Init config. Use in index before all or in tests

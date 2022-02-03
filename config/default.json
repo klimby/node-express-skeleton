@@ -1,5 +1,5 @@
 {
-    "routePrefix" : "/api",
+    "routePrefix" : "api",
     "logs" : {
         "channels": ["console", "file"],
         "dayRotation": 14,

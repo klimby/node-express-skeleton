@@ -3,7 +3,7 @@
     "display": "Node 14",
     
     "compilerOptions": {
-        "baseUrl": ".",
+        "baseUrl": "./",
         "outDir": "dist",
         "lib": ["es2020"],
         "module": "commonjs",
@@ -33,7 +33,6 @@
         "./node_modules/@types/winston/index.d.ts"
     ],
     "exclude": [
-        "typings/*",
         "node_modules"
     ]
 }

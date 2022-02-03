@@ -1,9 +1,8 @@
 import bodyParser             from 'body-parser';
 import express    from 'express';
 import { useExpressServer }   from 'routing-controllers';
-import { GlobalErrorHandler } from '../../../src/http/middleware/global-error-handler';
 import { Example }              from 'src/models/example';
-import { ExampleController } from '../../../src/http/controllers/example-controller';
+import { ExampleController } from 'src/http/controllers/example-controller';
 import request               from 'supertest';
 
 describe('UserController', () => {
@@ -17,8 +16,6 @@ describe('UserController', () => {
           routePrefix: '/api',
           classTransformer: true,
           controllers: [ExampleController], // we specify controllers we want to use
-          middlewares: [GlobalErrorHandler],
-          defaultErrorHandler: false,
         });
       });
 

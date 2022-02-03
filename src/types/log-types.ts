@@ -40,4 +40,20 @@ export interface AppLog {
    * @param ctx optional log context
    */
   error(message: string, ctx?: object): void;
+
+  /**
+   * Send critical log
+   * Critical: critical conditions
+   * @param message log message
+   * @param ctx optional log context
+   */
+  critical(message: string, ctx?: object): void;
+
+  /**
+   * Send emergency log
+   * Emergency: system is unusable
+   * @param message log message
+   * @param ctx optional log context
+   */
+  emergency(message: string, ctx?: object): void;
 }

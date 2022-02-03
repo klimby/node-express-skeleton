@@ -1,26 +1,29 @@
-import App    from './providers/app-provider';
-import Config from './providers/config-provider';
-import Log    from './providers/logs-provider';
+import { Handler } from './exception/handler';
+import app         from './providers/app';
+import appConfig   from './providers/app-config';
+import log         from './providers/app-log';
 
 /**
  * Init app configuration and settings
  */
-Config.init();
+appConfig.init();
 
 /**
  * Init logger
  */
-Log.init();
+log.init();
+
+Handler.appHandler();
 
 /**
  * Set applications routes
  */
-App.initRoutes();
+app.initRoutes();
 
 /**
  * Start node server
  */
-App.startServer();
+app.startServer();
 
 
 

@@ -3,6 +3,7 @@ import {
   Body,
   Controller,
   Get,
+  HttpError,
   JsonController,
   OnUndefined,
   Param,
@@ -22,17 +23,17 @@ export class ExampleController {
   @UseAfter(loggingAfter)
   @UseInterceptor(function (action: Action, content: any) {
     console.log('change response...');
-    return content;
+  //  return content;
   })
   @Get('/users/:id')
   getOne (@Param('id') id: number) {
+    throw new HttpError(403);
     return 'This action returns user #' + id;
   }
 
   @Post('/users/:id')
   @OnUndefined(204)
   postOne (@Param('id') id: number, @Body() info: Example) {
-    console.log(JSON.stringify(info));
-    return JSON.stringify(info);
+    return info;
   }
 }
