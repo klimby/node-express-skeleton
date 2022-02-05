@@ -1,17 +1,18 @@
 import {
   Format,
   TimestampOptions,
-}                      from 'logform';
+}                  from 'logform';
+import { Helpers } from '../helpers/helpers';
 import {
   AppConfig,
   LogChannel,
   LogFileFormat,
-}                      from '../types/config-types';
-import { AppLog }      from '../types/log-types';
+}                  from '../types/config-types';
+import { AppLog }  from '../types/log-types';
 import winston, {
   format,
   Logger,
-}                      from 'winston';
+}                  from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 import appConfig from './app-config';
@@ -162,7 +163,7 @@ class LogProvider implements AppLog {
     const { combine, timestamp, label, metadata } = format;
 
     const errorFilter = winston.format((info) => {
-      return ['error', 'crit', 'alert', 'emerg'].includes(info.level) ? info : false;
+      return this.#isError(info.level) ? info : false;
     });
 
     const fileFormat = this.#config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat()
@@ -181,6 +182,10 @@ class LogProvider implements AppLog {
           fileFormat,
       ),
     }));
+  }
+
+  #isError(level: string):boolean {
+    return ['error', 'crit', 'alert', 'emerg'].includes(level);
   }
 
   /**
@@ -250,8 +255,20 @@ class LogProvider implements AppLog {
    * Get format for log file in text style
    */
   #getFileTextFormat(): Format {
-    return this.#getConsoleFormat();
+    const { printf } = format;
+    return printf(({ level, message, label, timestamp, metadata }) => {
+      let result = `[${timestamp}] ${label}.${level.toUpperCase()}: ${message}`;
+      if (metadata && Object.keys(metadata).length !== 0) {
+        if('stack' in metadata && typeof metadata['stack'] === 'string') {
+          metadata['stack'] = Helpers.clearErrorStack(metadata['stack']);
+        }
+        const meta = JSON.stringify(metadata);
+        result = `${result}. ${meta}`;
+      }
+      return result;
+    });
   }
+
 
   /**
    * Get console log format
@@ -259,8 +276,12 @@ class LogProvider implements AppLog {
   #getConsoleFormat(): Format {
     const { printf } = format;
     return printf(({ level, message, label, timestamp, metadata }) => {
+      if('stack' in metadata && typeof metadata['stack'] === 'string') {
+        message += `\n\t${metadata['stack']}`;
+      }
+
       let result = `[${timestamp}] ${label}.${level.toUpperCase()}: ${message}`;
-      if (metadata && Object.keys(metadata).length !== 0) {
+      if (!this.#isError(level) && metadata && Object.keys(metadata).length !== 0) {
         const meta = JSON.stringify(metadata);
         result = `${result}. ${meta}`;
       }

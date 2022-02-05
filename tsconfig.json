@@ -27,7 +27,7 @@
         "./node_modules/@types/body-parser/index.d.ts",
         "./node_modules/@types/config/index.d.ts",
         "./node_modules/@types/jest/index.d.ts",
-        "./node_modules/@types/lodash-es/index.d.ts",
+        "./node_modules/@types/lodash/index.d.ts",
         "./node_modules/@types/multer/index.d.ts",
         "./node_modules/@types/supertest/index.d.ts",
         "./node_modules/@types/winston/index.d.ts"

@@ -31,7 +31,8 @@ class AppProvider implements App {
       routePrefix,
       classTransformer: true,
       controllers: [ExampleController],
-      middlewares: [GlobalErrorHandler]
+      middlewares: [GlobalErrorHandler],
+      defaultErrorHandler: false
     });
     /**
      * 404 error

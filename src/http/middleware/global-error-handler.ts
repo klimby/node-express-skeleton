@@ -17,13 +17,9 @@ export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
     if (Helpers.isJsonRequest(request, appConfig)) {
       const apiError = new ApiError(error);
       appLog.error(apiError.message, apiError.getLogContext({}));
-      response.status(apiError.httpCode).json(apiError);
+      response.status(apiError.httpCode).json(apiError.getResponseObject());
     } else {
       next();
     }
-
-    //  response.status(error.statusCode || error.httpCode).json(error);
-    //  response.send({ ERROR: error });
-
   }
 }

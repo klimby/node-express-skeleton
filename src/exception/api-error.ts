@@ -1,4 +1,3 @@
-import { truncate }     from 'lodash-es';
 import {
   HttpError,
   MethodNotAllowedError,
@@ -78,21 +77,9 @@ export class ApiError extends Error {
     o = Object.assign(o, data);
 
     if (stack) {
-      const trimStack = this.getTrimStack();
-      if (trimStack) {
-        o.stack = trimStack;
-      }
+      o.stack = this.stack;
     }
     return o;
   }
 
-  /**
-   * Trim stack trace
-   */
-  getTrimStack(): string {
-    return this.stack ? truncate(this.stack, {
-      length: 80,
-      separator: ' ',
-    }) : '';
-  }
 }
