@@ -1,7 +1,7 @@
 process.env.NODE_ENV = 'testing';
 module.exports = {
   clearMocks: true,
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     './src/**/*.ts'
   ],

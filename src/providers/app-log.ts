@@ -34,20 +34,9 @@ class LogProvider implements AppLog {
   /**
    * Winston Logger instance
    */
-  #logger: Logger;
+  #logger!: Logger;
 
   readonly #logDir = 'logs';
-
-  constructor() {
-
-    this.#logger = winston.createLogger(
-        {
-          levels: winston.config.syslog.levels,
-          level: 'debug',
-          exitOnError: false,
-        },
-    );
-  }
 
   /**
    * App config
@@ -60,6 +49,14 @@ class LogProvider implements AppLog {
    * Init logger and set config. Run in index
    */
   init(): void {
+    this.#logger = winston.createLogger(
+        {
+          levels: winston.config.syslog.levels,
+          level: 'debug',
+          exitOnError: false,
+        },
+    );
+
     this.#setExceptionsHandler();
     this.#setRejectionsHandler();
 

@@ -1,22 +1,46 @@
-GET http://localhost:5000/api/users/1
+### Get all examples
+GET http://localhost:5000/api/examples
 Content-Type: application/json
 
-###
+### Get first example
+GET http://localhost:5000/api/examples/1
+Content-Type: application/json
 
-
-### Send POST request with json body
-POST http://localhost:5000/api/users/1
+### Create example
+POST http://localhost:5000/api/examples
 Content-Type: application/json
 
 {
-    "name": "Russia",
-    "description": "SPb"
+    "name": "New example",
+    "description": "New example description"
 }
 
-### Send invalid json request
+### Create invalid example
+POST http://localhost:5000/api/examples
+Content-Type: application/json
+
+{
+    "description": "New example description"
+}
+
+### Change example #3
+PUT http://localhost:5000/api/examples/3
+Content-Type: application/json
+
+{
+    "name": "Changed example",
+    "description": "Changed example description"
+}
+
+### Delete example #3
+DELETE http://localhost:5000/api/examples/3
+Content-Type: application/json
+
+
+### Not found json request
 GET http://localhost:5000/api/asdsd
 Content-Type: application/json
 
 
-### Send invalid request
+### Not found http request
 GET http://localhost:5000/asdsd

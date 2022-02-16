@@ -11,7 +11,7 @@ import log                      from './app-log';
 /**
  * Application provider
  */
-class AppProvider implements App {
+export class AppProvider implements App {
 
   readonly express: Application;
 
@@ -32,7 +32,7 @@ class AppProvider implements App {
       classTransformer: true,
       controllers: [ExampleController],
       middlewares: [GlobalErrorHandler],
-      defaultErrorHandler: false
+      defaultErrorHandler: false,
     });
     /**
      * 404 error

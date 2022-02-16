@@ -5,6 +5,11 @@ import {
 
 export class RequestCodes {
 
+  /**
+   * Get request message by request code
+   * @param code http request code
+   * @param locale locale (ru|en)
+   */
   static getRequestByCode(code: number, locale: Locales = Locales.en): string {
     const requestCodes: Map<number, Lang> = RequestCodes.#getCodes();
     const entity = requestCodes.has(code) ? requestCodes.get(code) : { en: 'Internal Server Error', ru: '' };

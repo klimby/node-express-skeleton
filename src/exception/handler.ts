@@ -7,7 +7,6 @@ import { NotFoundError } from 'routing-controllers';
 import { Helpers }       from '../helpers/helpers';
 import appConfig         from '../providers/app-config';
 import appLog            from '../providers/app-log';
-import { ApiError }      from './api-error';
 
 export class Handler {
 
@@ -22,23 +21,31 @@ export class Handler {
   /**
    * Handles all the not found routes (404 error)
    */
-  static notFoundHandler(req:Request, res:Response, next:NextFunction): void {
-    if(Helpers.isJsonRequest(req, appConfig)) {
-      const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-      const message = `Path not found: '${req.originalUrl}'!`;
-      const err = new NotFoundError(message);
-      const apiError = new ApiError(err);
-      appLog.warning(apiError.message, {httpCode: apiError.httpCode, ip});
-      res.status(apiError.httpCode).json(apiError.getResponseObject());
-    } else {
-      next();
+  static notFoundHandler(req: Request, res: Response, next: NextFunction): void {
+    if(!res.headersSent) {
+      if (Helpers.isJsonRequest(req, appConfig)) {
+        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+        const message = `Path not found: '${req.originalUrl}'!`;
+        const err = new NotFoundError(message);
+        appLog.warning(message, { ip });
+        res.status(err.httpCode)
+            .json(err);
+      } else {
+        res.status(404).send(
+            '<h1>Page not found on the server</h1>');
+      }
     }
   }
 
+  /**
+   * Uncaught Exception handler
+   * @private
+   */
   static #handleUncaughtException(): void {
     process.on('uncaughtException', (error: Error) => {
       //throw error;
-      appLog.critical(error.message, {stack: error.stack});
+      const message = error.message ? error.message : 'Critical error!';
+      appLog.critical(message, error);
       appLog.emergency('Critical error! System exit.');
       process.exit(1);
     });

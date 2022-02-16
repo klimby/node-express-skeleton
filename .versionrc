@@ -6,7 +6,7 @@
         },
         {
             "filename": "README.md",
-            "updater": "standard-version-updater.js"
+            "updater": "scripts/standard-version-updater.js"
         }
     ]
 }

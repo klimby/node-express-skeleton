@@ -53,7 +53,7 @@ class ConfigProvider implements AppConfig {
 
   constructor() {
     dotenv.config();
-    this.#setNodeEnv();
+
   }
 
   /**
@@ -124,11 +124,13 @@ class ConfigProvider implements AppConfig {
    * @param appConfig partial config (for test cases)
    */
   init(appConfig?: Partial<ConfigProvider>) {
+    this.#setNodeEnv();
     this.#setPort();
     this.#setPrefix();
     this.#setAppName();
     this.#setVersion();
     this.#setLogs(appConfig);
+    this.#setLocale();
   }
 
   /**

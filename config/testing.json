@@ -1,0 +1,9 @@
+{
+    "routePrefix" : "api",
+    "logs" : {
+        "channels": [],
+        "dayRotation": 1,
+        "logFileContentFormat": "text",
+        "utc": false
+    }
+}
