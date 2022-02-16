@@ -1,35 +1,22 @@
 import {
   Format,
   TimestampOptions,
-}                  from 'logform';
-import { Helpers } from '../helpers/helpers';
-import {
-  AppConfig,
-  LogChannel,
-  LogFileFormat,
-}                  from '../types/config-types';
-import { AppLog }  from '../types/log-types';
+}                        from 'logform';
+import { Service }       from 'typedi';
 import winston, {
   format,
   Logger,
-}                  from 'winston';
-import DailyRotateFile from 'winston-daily-rotate-file';
+}                        from 'winston';
+import DailyRotateFile   from 'winston-daily-rotate-file';
+import { Helpers }       from '../helpers/helpers';
+import {
+  LogChannel,
+  LogFileFormat,
+}                        from '../types/config-types';
+import { ConfigService } from './config.service';
 
-import appConfig from './app-config';
-
-/**
- * Log provider
- * Syslog levels:
- *               0       Emergency: system is unusable
- *               1       Alert: action must be taken immediately
- *               2       Critical: critical conditions
- *               3       Error: error conditions
- *               4       Warning: warning conditions
- *               5       Notice: normal but significant condition
- *               6       Informational: informational messages
- *               7       Debug: debug-level messages
- */
-class LogProvider implements AppLog {
+@Service()
+export class LogService {
 
   /**
    * Winston Logger instance
@@ -38,17 +25,16 @@ class LogProvider implements AppLog {
 
   readonly #logDir = 'logs';
 
-  /**
-   * App config
-   */
-  get #config(): AppConfig {
-    return appConfig;
+  constructor(
+      private config: ConfigService,
+  ) {
+    this.#init();
   }
 
   /**
    * Init logger and set config. Run in index
    */
-  init(): void {
+  #init(): void {
     this.#logger = winston.createLogger(
         {
           levels: winston.config.syslog.levels,
@@ -60,11 +46,11 @@ class LogProvider implements AppLog {
     this.#setExceptionsHandler();
     this.#setRejectionsHandler();
 
-    if (this.#config.logs.channels.includes(LogChannel.File)) {
+    if (this.config.logs.channels.includes(LogChannel.File)) {
       this.#setFileLogger();
       this.#setFileErrorLogger();
     }
-    if (this.#config.logs.channels.includes(LogChannel.Console)) {
+    if (this.config.logs.channels.includes(LogChannel.Console)) {
       this.#setConsoleLogger();
     }
   }
@@ -163,7 +149,7 @@ class LogProvider implements AppLog {
       return this.#isError(info.level) ? info : false;
     });
 
-    const fileFormat = this.#config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat()
+    const fileFormat = this.config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat()
                                                                                      : this.#getFileTextFormat();
     const timestampOptions = this.#getTimestampFileOptions();
 
@@ -174,14 +160,14 @@ class LogProvider implements AppLog {
       format: combine(
           errorFilter(),
           metadata(),
-          label({ label: this.#config.appName }),
+          label({ label: this.config.appName }),
           timestamp(timestampOptions),
           fileFormat,
       ),
     }));
   }
 
-  #isError(level: string):boolean {
+  #isError(level: string): boolean {
     return ['error', 'crit', 'alert', 'emerg'].includes(level);
   }
 
@@ -195,7 +181,7 @@ class LogProvider implements AppLog {
       level: 'debug',
       format: combine(
           metadata(),
-          label({ label: this.#config.appName }),
+          label({ label: this.config.appName }),
           timestamp(this.#getTimestampConsoleOptions()),
           align(),
           logFormat,
@@ -210,7 +196,7 @@ class LogProvider implements AppLog {
   #setFileLogger(): void {
     const { combine, timestamp, label, metadata } = format;
 
-    const fileFormat = this.#config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat()
+    const fileFormat = this.config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat()
                                                                                      : this.#getFileTextFormat();
     const timestampOptions = this.#getTimestampFileOptions();
 
@@ -219,12 +205,12 @@ class LogProvider implements AppLog {
       filename: 'combined-%DATE%.log',
       dirname: this.#logDir,
       datePattern: 'YYYY-MM-DD',
-      maxFiles: `${this.#config.logs.dayRotation}d`,
+      maxFiles: `${this.config.logs.dayRotation}d`,
       zippedArchive: true,
       auditFile: 'storage/log-audit.json',
       format: combine(
           metadata(),
-          label({ label: this.#config.appName }),
+          label({ label: this.config.appName }),
           timestamp(timestampOptions),
           fileFormat,
       ),
@@ -256,7 +242,7 @@ class LogProvider implements AppLog {
     return printf(({ level, message, label, timestamp, metadata }) => {
       let result = `[${timestamp}] ${label}.${level.toUpperCase()}: ${message}`;
       if (metadata && Object.keys(metadata).length !== 0) {
-        if('stack' in metadata && typeof metadata['stack'] === 'string') {
+        if ('stack' in metadata && typeof metadata['stack'] === 'string') {
           metadata['stack'] = Helpers.clearErrorStack(metadata['stack']);
         }
         const meta = JSON.stringify(metadata);
@@ -266,14 +252,13 @@ class LogProvider implements AppLog {
     });
   }
 
-
   /**
    * Get console log format
    */
   #getConsoleFormat(): Format {
     const { printf } = format;
     return printf(({ level, message, label, timestamp, metadata }) => {
-      if('stack' in metadata && typeof metadata['stack'] === 'string') {
+      if ('stack' in metadata && typeof metadata['stack'] === 'string') {
         message += `\n\t${metadata['stack']}`;
       }
 
@@ -290,18 +275,13 @@ class LogProvider implements AppLog {
    * Get timestamp options. Undefined = toISOString()
    */
   #getTimestampConsoleOptions(): TimestampOptions | undefined {
-    return this.#config.logs.utc ? undefined : { format: 'YYYY-MM-DD HH:mm:ss.SSS' };
+    return this.config.logs.utc ? undefined : { format: 'YYYY-MM-DD HH:mm:ss.SSS' };
   }
 
   /**
    * Timestamp for file
    */
   #getTimestampFileOptions(): TimestampOptions | undefined {
-    return this.#config.logs.utc ? undefined : { format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' };
+    return this.config.logs.utc ? undefined : { format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' };
   }
-
 }
-
-const appLog: AppLog = new LogProvider();
-
-export default appLog;

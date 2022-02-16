@@ -1,9 +1,12 @@
-import appConfig from '../../src/providers/app-config';
+import { ConfigService } from '../../src/providers/config.service';
+import { AppConfig }     from '../../src/types/config-types';
 
 describe('app config test', () => {
 
+  let config: AppConfig;
+
       beforeAll(async () => {
-        appConfig.init();
+        config = new ConfigService();
       });
 
       afterEach(() => {
@@ -11,16 +14,16 @@ describe('app config test', () => {
       });
 
       it('config env test', () => {
-        expect(appConfig.isDevelopment)
+        expect(config.isDevelopment)
             .toBeFalsy();
-        expect(appConfig.isTesting)
+        expect(config.isTesting)
             .toBeTruthy();
-        expect(appConfig.isProduction)
+        expect(config.isProduction)
             .toBeFalsy();
       });
 
       it('config test', () => {
-        expect(appConfig.locale)
+        expect(config.locale)
             .toEqual('en');
       });
 

@@ -1,28 +1,7 @@
-import { Handler } from './exception/handler';
-import app         from './providers/app';
-import appConfig   from './providers/app-config';
-import log         from './providers/app-log';
+import { Container }  from 'typedi';
+import { AppService } from './providers/app.service';
 
-/**
- * Init app configuration and settings
- */
-appConfig.init();
-
-/**
- * Init logger
- */
-log.init();
-
-Handler.appHandler();
-
-/**
- * Set applications routes
- */
-app.initRoutes();
-
-/**
- * Start node server
- */
+const app = Container.get(AppService);
 app.startServer();
 
 

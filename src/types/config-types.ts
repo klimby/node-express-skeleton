@@ -60,7 +60,7 @@ export interface AppConfig {
    * Init config. Use in index before all or in tests
    * @param appConfig partial config (for test cases)
    */
-  init(appConfig?: Partial<AppConfig>): void;
+  //init(appConfig?: Partial<AppConfig>): void;
 }
 
 /**
