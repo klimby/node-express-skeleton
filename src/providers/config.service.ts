@@ -64,8 +64,8 @@ export class ConfigService implements AppConfig{
     if (process.env.npm_package_version) {
       this.version = process.env.npm_package_version;
     }
-    if (process.env.PORT) {
-      this.port = +process.env.PORT;
+    if (process.env.NODE_SERVER_PORT) {
+      this.port = +process.env.NODE_SERVER_PORT;
     }
     if (process.env.LOCALE) {
       const locale = process.env.LOCALE.toLowerCase();

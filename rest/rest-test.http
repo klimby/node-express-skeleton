@@ -1,13 +1,13 @@
 ### Get all examples
-GET http://localhost:5000/api/examples
+GET http://localhost:3000/api/examples
 Content-Type: application/json
 
 ### Get first example
-GET http://localhost:5000/api/examples/1
+GET http://localhost:3000/api/examples/1
 Content-Type: application/json
 
 ### Create example
-POST http://localhost:5000/api/examples
+POST http://localhost:3000/api/examples
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### Create invalid example
-POST http://localhost:5000/api/examples
+POST http://localhost:3000/api/examples
 Content-Type: application/json
 
 {
@@ -24,7 +24,7 @@ Content-Type: application/json
 }
 
 ### Change example #3
-PUT http://localhost:5000/api/examples/3
+PUT http://localhost:3000/api/examples/3
 Content-Type: application/json
 
 {
@@ -33,14 +33,14 @@ Content-Type: application/json
 }
 
 ### Delete example #3
-DELETE http://localhost:5000/api/examples/3
+DELETE http://localhost:3000/api/examples/3
 Content-Type: application/json
 
 
 ### Not found json request
-GET http://localhost:5000/api/asdsd
+GET http://localhost:3000/api/asdsd
 Content-Type: application/json
 
 
 ### Not found http request
-GET http://localhost:5000/asdsd
+GET http://localhost:3000/asdsd

@@ -3,18 +3,7 @@
 # Makefile readme (en): <https://www.gnu.org/software/make/manual/html_node/index.html#SEC_Contents>
 SHELL = /bin/sh
 
-COM_COLOR   = \033[0;34m
-OBJ_COLOR   = \033[0;36m
-OK_COLOR    = \033[0;32m
-ERROR_COLOR = \033[0;31m
-WARN_COLOR  = \033[0;33m
-NO_COLOR    = \033[m
-
 docker_bin := $(shell command -v docker 2> /dev/null)
-
-docker_compose_bin := $(shell command -v docker-compose 2> /dev/null)
-
-npm_bin := $(shell command -v npm 2> /dev/null)
 
 PACKAGE_VERSION := $(shell git describe --tags $$(git rev-list --tags --max-count=1))
 
@@ -23,15 +12,13 @@ PACKAGE_VERSION := $(shell git describe --tags $$(git rev-list --tags --max-coun
 
 CONTAINER_NAME := node-express-skeleton
 
-NGINX_IMAGE := e-nginx
-
 PREFIX := klimby
 
 --------------------: ## --------------------
 
 .DEFAULT_GOAL := help
 
-.PHONY: help login push pull-nginx pull build build-no-cache build-dev create create-no-cache readme
+.PHONY: help push build build-no-cache build-dev create create-no-cache
 
 --------------------: ## --------------------
 
@@ -40,6 +27,11 @@ help: ## Show this help
 
 --------------------: ## --------------------
 
+up: ## Запуск (база данных в контейнере)
+	@$(docker_bin) compose -f ./docker-test/docker-compose.yml up
+
+down: ## Остановка систем, база данных в контейнере
+	@$(docker_bin) compose -f ./docker-test/docker-compose.yml down
 
 --------------------: ## ------------------------------
 --------------------: ## *** PUSH PULL LOGIN ***
@@ -47,9 +39,7 @@ help: ## Show this help
 
 
 push: ## Отправить на хаб
-	$(docker_bin) tag $(PREFIX)/$(CONTAINER_NAME):$(PACKAGE_VERSION)
 	$(docker_bin) push $(PREFIX)/$(CONTAINER_NAME):$(PACKAGE_VERSION)
-	$(docker_bin) tag $(PREFIX)/$(CONTAINER_NAME):latest
 	$(docker_bin) push $(PREFIX)/$(CONTAINER_NAME):latest
 
 --------------------: ## ------------------------------
@@ -68,3 +58,12 @@ create: ## Создать с использованием кэша
 
 create-no-cache: ## Создать без учета кэша
 	$(docker_bin) build --no-cache --label version=$(PACKAGE_VERSION) -t $(PREFIX)/$(CONTAINER_NAME):$(PACKAGE_VERSION) -t $(PREFIX)/$(CONTAINER_NAME):latest .
+
+--------------------: ## ------------------------------
+--------------------: ## *** ВХОДЫ В КОНСОЛЬ КОНТЕЙНЕРОВ ***
+--------------------: ## контейнеры запущены, для выхода набрать exit
+--------------------: ## ------------------------------
+
+enter: ## Вход в контейнер
+	@printf "%b" "$(COM_COLOR)=========== Вход в контейнер php ===========\n$(NO_COLOR)"
+	@$(docker_bin)  exec -i -t  node-skeleton /bin/sh

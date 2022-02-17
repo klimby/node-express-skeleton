@@ -5,6 +5,7 @@ import {
   Request,
   Response,
 }                               from 'express-serve-static-core';
+import http                     from 'http';
 import {
   NotFoundError,
   useExpressServer,
@@ -21,6 +22,9 @@ import { LogService }    from './log.service';
 export class AppService {
 
   readonly express: Application;
+ //readonly express: express.Express;
+
+  server: http.Server | undefined = undefined;
 
   constructor(
       private config: ConfigService,
@@ -33,10 +37,11 @@ export class AppService {
   /**
    * Start http server
    */
-  startServer(): void {
+  startServer(): http.Server {
     this._clearConsole();
     const port = this.config.port;
-    this.express.listen(port, () => this.log.info(`Running on port ${port}`));
+    this.server  = this.express.listen(port, () => this.log.info(`Running on port ${port}`));
+    return this.server;
   }
 
   /**
