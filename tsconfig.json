@@ -19,20 +19,5 @@
     },
     "include": [
         "src/**/*.ts"
-    ],
-    "files": [
-        "./node_modules/@types/node/index.d.ts",
-        "./node_modules/@types/express/index.d.ts",
-        "./node_modules/@types/dotenv/index.d.ts",
-        "./node_modules/@types/body-parser/index.d.ts",
-        "./node_modules/@types/config/index.d.ts",
-        "./node_modules/@types/jest/index.d.ts",
-        "./node_modules/@types/lodash/index.d.ts",
-        "./node_modules/@types/multer/index.d.ts",
-        "./node_modules/@types/supertest/index.d.ts",
-        "./node_modules/@types/winston/index.d.ts"
-    ],
-    "exclude": [
-        "node_modules"
     ]
 }

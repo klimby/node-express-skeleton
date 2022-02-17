@@ -1,0 +1,6 @@
+dist/*
+logs/*
+node_modules
+rest
+scripts
+storage/*
