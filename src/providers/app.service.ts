@@ -22,7 +22,6 @@ import { LogService }    from './log.service';
 export class AppService {
 
   readonly express: Application;
- //readonly express: express.Express;
 
   server: http.Server | undefined = undefined;
 
@@ -38,7 +37,7 @@ export class AppService {
    * Start http server
    */
   startServer(): http.Server {
-    this._clearConsole();
+    this.#clearConsole();
     const port = this.config.port;
     this.server  = this.express.listen(port, () => this.log.info(`Running on port ${port}`));
     return this.server;
@@ -49,10 +48,12 @@ export class AppService {
    */
   #initRoutes(): void {
 
-    this._handleUncaughtException();
-    this._handleUnhandledRejection();
+    this.#handleUncaughtException();
+    this.#handleUnhandledRejection();
 
     this.express.use(bodyParser.json());
+
+    this.#addVersionRoutes();
 
     const routePrefix = this.config.routePrefix ? `/${this.config.routePrefix}` : '';
 
@@ -66,14 +67,27 @@ export class AppService {
     /**
      * 404 error
      */
-    this.express.use(this._notFoundHandler);
+    this.express.use(this.#notFoundHandler);
   }
 
-  private _clearConsole(): void {
+  #addVersionRoutes(): void {
+    const reg = /(^\/$)|(^\/api\/version$)|(^\/version$)/;
+    this.express.get(reg,  (req: Request, res: Response) => {
+      const version = this.config.version;
+      const name = this.config.appName;
+      if(Helpers.isJsonRequest(req, this.config)) {
+        res.json({name, version});
+      } else {
+        res.send(`${name}. v.${version}`);
+      }
+    });
+  }
+
+  #clearConsole(): void {
     process.stdout.write('\x1B[2J\x1B[0f');
   }
 
-  private _notFoundHandler(req: Request, res: Response, next: NextFunction): void {
+  #notFoundHandler(req: Request, res: Response, next: NextFunction): void {
     if (!res.headersSent) {
       if (Helpers.isJsonRequest(req, this.config)) {
         const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
@@ -94,7 +108,7 @@ export class AppService {
    * Uncaught Exception handler
    * @private
    */
-  private _handleUncaughtException(): void {
+  #handleUncaughtException(): void {
     process.on('uncaughtException', (error: Error) => {
       //throw error;
       const message = error.message ? error.message : 'Critical error!';
@@ -107,9 +121,9 @@ export class AppService {
   /**
    * Get the unhandled rejection and throw it to another fallback handler we already have
    */
-  private _handleUnhandledRejection(): void {
+  #handleUnhandledRejection(): void {
     // get the unhandled rejection and throw it to another fallback handler we already have.
-    process.on('unhandledRejection', (reason: Error, promise: Promise<any>) => {
+    process.on('unhandledRejection', (reason: Error, promise: Promise<unknown>) => {
       throw reason;
     });
   }

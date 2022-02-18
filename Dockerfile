@@ -18,7 +18,7 @@ WORKDIR /app
 RUN mkdir dist config logs storage
 
 COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/config/production.json ./config/default.json
+COPY --from=build /usr/src/app/config/default.json ./config/default.json
 COPY --from=build /usr/src/app/config/production.json ./config/production.json
 COPY --from=build /usr/src/app/package.json ./package.json
 

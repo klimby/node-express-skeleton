@@ -4,3 +4,4 @@ node_modules
 rest
 scripts
 storage/*
+docker-test

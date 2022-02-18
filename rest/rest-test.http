@@ -1,3 +1,15 @@
+### Get version v1
+GET http://localhost:3000
+Content-Type: application/json
+
+### Get version v2
+GET http://localhost:3000/version
+Content-Type: application/json
+
+### Get version v3
+GET http://localhost:3000/api/version
+Content-Type: application/json
+
 ### Get all examples
 GET http://localhost:3000/api/examples
 Content-Type: application/json

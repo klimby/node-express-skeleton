@@ -14,7 +14,7 @@ export class Helpers {
    */
   static isJsonRequest(req: Request, appConfig: AppConfig): boolean {
     const apiPrefix = appConfig.routePrefix;
-    const isJson = req.header('Content-Type') === 'application/json';
+    const isJson = req.header('Content-Type') === 'application/json' && !!req.accepts('application/json');
     return isJson || req.xhr || req.originalUrl.includes(`/${apiPrefix}/`);
   }
 
