@@ -92,6 +92,7 @@ export class AppService {
   }
 
   #notFoundHandler(): (req: Request, res: Response, next: NextFunction) => void {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     return (req: Request, res: Response, next: NextFunction) => {
       if (!res.headersSent) {
         if (Helpers.isJsonRequest(req)) {
@@ -129,6 +130,7 @@ export class AppService {
    */
   #handleUnhandledRejection(): void {
     // get the unhandled rejection and throw it to another fallback handler we already have.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     process.on('unhandledRejection', (reason: Error, promise: Promise<unknown>) => {
       throw reason;
     });

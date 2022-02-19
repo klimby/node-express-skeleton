@@ -1,18 +1,15 @@
 import {
   Request,
   Response,
-}                        from 'express-serve-static-core';
+}                       from 'express-serve-static-core';
 import {
   ExpressErrorMiddlewareInterface,
   HttpError,
   Middleware,
-}                        from 'routing-controllers';
-import {
-  Container,
-  Service,
-} from 'typedi';
-import { Helpers }       from '../../helpers/helpers';
-import { RequestCodes }  from '../../helpers/request-codes';
+}                       from 'routing-controllers';
+import { Service }      from 'typedi';
+import { Helpers }      from '../../helpers/helpers';
+import { RequestCodes } from '../../helpers/request-codes';
 
 import { ConfigService } from '../../providers/config.service';
 import { LogService }    from '../../providers/log.service';
@@ -23,7 +20,7 @@ export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
 
   constructor(
       private config: ConfigService,
-      private log: LogService
+      private log: LogService,
   ) {}
 
   error(error: Error | HttpError, request: Request, response: Response, next: (err?: Error) => void) {

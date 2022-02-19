@@ -105,9 +105,9 @@ export class ExampleController {
  * @param action
  * @param content
  */
-export function exampleInterceptor(action: Action, content: any): any {
+export function exampleInterceptor<T>(action: Action, content: T): T {
   // console.log('change response...');
-  //  return content;
+    return content;
 }
 
 /**

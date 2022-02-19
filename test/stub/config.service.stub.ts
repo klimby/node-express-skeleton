@@ -1,13 +1,11 @@
 import { ConfigService } from '../../src/providers/config.service';
 import {
-  LogChannel,
   LogConfig,
   LogFileFormat,
   NodeEnv,
 }                        from '../../src/types/config-types';
 
 export class ConfigServiceStub {
-
 
   /**
    * Server port. Default 3000
@@ -33,7 +31,6 @@ export class ConfigServiceStub {
     utc: false,
   };
 
-
   static create(config: Partial<ConfigServiceStub>, logs: Partial<LogConfig> = {}): ConfigService {
     let o = new ConfigServiceStub();
     o = Object.assign(o, config);
@@ -54,7 +51,6 @@ export class ConfigServiceStub {
   get isDevelopment(): boolean {
     return this.nodeEnv === NodeEnv.Development;
   }
-
 
   /**
    * Is testing mode

@@ -2,7 +2,7 @@ import { LogService } from '../../src/providers/log.service';
 
 export class LogServiceStub {
 
-  private _messages: string[] = [];
+  private _logs: LogServiceStubObject[] = [];
 
   static create(): LogService {
     return new LogServiceStub() as unknown as LogService;
@@ -15,7 +15,7 @@ export class LogServiceStub {
    * @param ctx optional log context
    */
   info(message: string, ctx?: object) {
-    this._messages.push(message);
+    this.#addObject('info', message, ctx);
   }
 
   /**
@@ -25,7 +25,7 @@ export class LogServiceStub {
    * @param ctx optional log context
    */
   notice(message: string, ctx?: object): void {
-    this._messages.push(message);
+    this.#addObject('notice', message, ctx);
   }
 
   /**
@@ -35,7 +35,7 @@ export class LogServiceStub {
    * @param ctx optional log context
    */
   warning(message: string, ctx?: object): void {
-    this._messages.push(message);
+    this.#addObject('warning', message, ctx);
   }
 
   /**
@@ -45,7 +45,7 @@ export class LogServiceStub {
    * @param ctx optional log context
    */
   error(message: string, ctx?: object): void {
-    this._messages.push(message);
+    this.#addObject('error', message, ctx);
   }
 
   /**
@@ -55,7 +55,7 @@ export class LogServiceStub {
    * @param ctx optional log context
    */
   emergency(message: string, ctx?: object): void {
-    this._messages.push(message);
+    this.#addObject('emergency', message, ctx);
   }
 
   /**
@@ -65,6 +65,18 @@ export class LogServiceStub {
    * @param ctx optional log context
    */
   critical(message: string, ctx?: object): void {
-    this._messages.push(message);
+    this.#addObject('critical', message, ctx);
   }
+
+  #addObject(level: string, message: string, ctx?: object): void {
+    this._logs.push({
+      level, message, ctx
+    });
+  }
+}
+
+interface LogServiceStubObject {
+  level: string;
+  message: string;
+  ctx?: object;
 }

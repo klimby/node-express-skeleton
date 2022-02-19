@@ -3,7 +3,6 @@ import { ConfigService }     from '../../src/providers/config.service';
 import { LogService }        from '../../src/providers/log.service';
 import {
   LogChannel,
-  LogConfig,
   LogFileFormat,
 }                            from '../../src/types/config-types';
 import { ConfigServiceStub } from '../stub/config.service.stub';
@@ -41,13 +40,12 @@ describe('log service test', () => {
         jest.restoreAllMocks();
       });
 
-
       it('default log config test', () => {
 
         const config = ConfigServiceStub.create({}, {
           channels: [LogChannel.Console, LogChannel.File],
           logFileContentFormat: LogFileFormat.Json,
-          utc: false
+          utc: false,
         });
         const mockCreateLogger = jest.spyOn(winston, 'createLogger');
         const loggingService: LogService = new LogService(config as ConfigService);
@@ -114,11 +112,12 @@ describe('log service test', () => {
         const config = ConfigServiceStub.create({}, {
           channels: [LogChannel.Console, LogChannel.File],
           logFileContentFormat: LogFileFormat.Text,
-          utc: true
+          utc: true,
         });
         const mockCreateLogger = jest.spyOn(winston, 'createLogger');
         const loggingService: LogService = new LogService(config as ConfigService);
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         loggerMock = mockCreateLogger.mock.instances[0];
 
         expect(loggingService)
@@ -178,13 +177,4 @@ describe('log service test', () => {
     },
 );
 
-class ConfigMock {
-  appName = 'app';
-  logs: LogConfig = {
-    channels: [LogChannel.Console, LogChannel.File],
-    dayRotation: 5,
-    logFileContentFormat: LogFileFormat.Json,
-    utc: false,
-  };
-}
 
