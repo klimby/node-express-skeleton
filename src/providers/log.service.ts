@@ -21,38 +21,14 @@ export class LogService {
   /**
    * Winston Logger instance
    */
-  #logger!: Logger;
+  private _logger!: Logger;
 
   readonly #logDir = 'logs';
 
   constructor(
       private config: ConfigService,
   ) {
-    this.#init();
-  }
-
-  /**
-   * Init logger and set config. Run in index
-   */
-  #init(): void {
-    this.#logger = winston.createLogger(
-        {
-          levels: winston.config.syslog.levels,
-          level: 'debug',
-          exitOnError: false,
-        },
-    );
-
-    this.#setExceptionsHandler();
-    this.#setRejectionsHandler();
-
-    if (this.config.logs.channels.includes(LogChannel.File)) {
-      this.#setFileLogger();
-      this.#setFileErrorLogger();
-    }
-    if (this.config.logs.channels.includes(LogChannel.Console)) {
-      this.#setConsoleLogger();
-    }
+    this._init();
   }
 
   /**
@@ -62,7 +38,7 @@ export class LogService {
    * @param ctx optional log context
    */
   info(message: string, ctx?: object) {
-    this.#logger.info(message, ctx);
+    this._logger.info(message, ctx);
   }
 
   /**
@@ -72,7 +48,7 @@ export class LogService {
    * @param ctx optional log context
    */
   notice(message: string, ctx?: object): void {
-    this.#logger.notice(message, ctx);
+    this._logger.notice(message, ctx);
   }
 
   /**
@@ -82,7 +58,7 @@ export class LogService {
    * @param ctx optional log context
    */
   warning(message: string, ctx?: object): void {
-    this.#logger.warning(message, ctx);
+    this._logger.warning(message, ctx);
   }
 
   /**
@@ -92,7 +68,7 @@ export class LogService {
    * @param ctx optional log context
    */
   error(message: string, ctx?: object): void {
-    this.#logger.error(message, ctx);
+    this._logger.error(message, ctx);
   }
 
   /**
@@ -102,7 +78,7 @@ export class LogService {
    * @param ctx optional log context
    */
   emergency(message: string, ctx?: object): void {
-    this.#logger.emerg(message, ctx);
+    this._logger.emerg(message, ctx);
   }
 
   /**
@@ -112,14 +88,38 @@ export class LogService {
    * @param ctx optional log context
    */
   critical(message: string, ctx?: object): void {
-    this.#logger.crit(message, ctx);
+    this._logger.crit(message, ctx);
+  }
+
+  /**
+   * Init logger and set config. Run in index
+   */
+  private _init(): void {
+    this._logger = winston.createLogger(
+        {
+          levels: winston.config.syslog.levels,
+          level: 'debug',
+          exitOnError: false,
+        },
+    );
+
+    this._setExceptionsHandler();
+    this._setRejectionsHandler();
+
+    if (this.config.logs.channels.includes(LogChannel.File)) {
+      this._setFileLogger();
+      this._setFileErrorLogger();
+    }
+    if (this.config.logs.channels.includes(LogChannel.Console)) {
+      this._setConsoleLogger();
+    }
   }
 
   /**
    * Aet unhandled exceptions log handler
    */
-  #setExceptionsHandler(): void {
-    this.#logger.exceptions.handle(
+  private _setExceptionsHandler(): void {
+    this._logger.exceptions.handle(
         new winston.transports.File({
           filename: 'exceptions.log',
           dirname: this.#logDir,
@@ -130,8 +130,8 @@ export class LogService {
   /**
    * Set promise rejections log handler
    */
-  #setRejectionsHandler(): void {
-    this.#logger.rejections.handle(
+  private _setRejectionsHandler(): void {
+    this._logger.rejections.handle(
         new winston.transports.File({
           filename: 'rejections.log',
           dirname: this.#logDir,
@@ -142,18 +142,18 @@ export class LogService {
   /**
    * Set error logger
    */
-  #setFileErrorLogger(): void {
+  private _setFileErrorLogger(): void {
     const { combine, timestamp, label, metadata } = format;
 
     const errorFilter = winston.format((info) => {
-      return this.#isError(info.level) ? info : false;
+      return this._isError(info.level) ? info : false;
     });
 
-    const fileFormat = this.config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat()
-                                                                                     : this.#getFileTextFormat();
-    const timestampOptions = this.#getTimestampFileOptions();
+    const fileFormat = this.config.logs.logFileContentFormat === LogFileFormat.Json ? this._getFileJsonFormat()
+                                                                                    : this._getFileTextFormat();
+    const timestampOptions = this._getTimestampFileOptions();
 
-    this.#logger.add(new winston.transports.File({
+    this._logger.add(new winston.transports.File({
       level: 'error',
       filename: 'errors.log',
       dirname: this.#logDir,
@@ -167,22 +167,22 @@ export class LogService {
     }));
   }
 
-  #isError(level: string): boolean {
+  private _isError(level: string): boolean {
     return ['error', 'crit', 'alert', 'emerg'].includes(level);
   }
 
   /**
    * Set console logger
    */
-  #setConsoleLogger(): void {
+  private _setConsoleLogger(): void {
     const { combine, timestamp, label, colorize, align, metadata } = format;
-    const logFormat = this.#getConsoleFormat();
-    this.#logger.add(new winston.transports.Console({
+    const logFormat = this._getConsoleFormat();
+    this._logger.add(new winston.transports.Console({
       level: 'debug',
       format: combine(
           metadata(),
           label({ label: this.config.appName }),
-          timestamp(this.#getTimestampConsoleOptions()),
+          timestamp(this._getTimestampConsoleOptions()),
           align(),
           logFormat,
           colorize({ all: true }),
@@ -193,12 +193,12 @@ export class LogService {
   /**
    * Set logger for file
    */
-  #setFileLogger(): void {
+  private _setFileLogger(): void {
     const { combine, timestamp, label, metadata } = format;
 
-    const fileFormat = this.config.logs.logFileContentFormat === LogFileFormat.Json ? this.#getFileJsonFormat()
-                                                                                     : this.#getFileTextFormat();
-    const timestampOptions = this.#getTimestampFileOptions();
+    const fileFormat = this.config.logs.logFileContentFormat === LogFileFormat.Json ? this._getFileJsonFormat()
+                                                                                    : this._getFileTextFormat();
+    const timestampOptions = this._getTimestampFileOptions();
 
     const transport: DailyRotateFile = new DailyRotateFile({
       level: 'info',
@@ -216,13 +216,13 @@ export class LogService {
       ),
     });
 
-    this.#logger.add(transport);
+    this._logger.add(transport);
   }
 
   /**
    * Get format for log file in json style
    */
-  #getFileJsonFormat(): Format {
+  private _getFileJsonFormat(): Format {
     const { printf } = format;
 
     return printf(({ level, message, label, timestamp, metadata }) => {
@@ -237,7 +237,7 @@ export class LogService {
   /**
    * Get format for log file in text style
    */
-  #getFileTextFormat(): Format {
+  private _getFileTextFormat(): Format {
     const { printf } = format;
     return printf(({ level, message, label, timestamp, metadata }) => {
       let result = `[${timestamp}] ${label}.${level.toUpperCase()}: ${message}`;
@@ -255,7 +255,7 @@ export class LogService {
   /**
    * Get console log format
    */
-  #getConsoleFormat(): Format {
+  private _getConsoleFormat(): Format {
     const { printf } = format;
     return printf(({ level, message, label, timestamp, metadata }) => {
       if ('stack' in metadata && typeof metadata['stack'] === 'string') {
@@ -263,7 +263,7 @@ export class LogService {
       }
 
       let result = `[${timestamp}] ${label}.${level.toUpperCase()}: ${message}`;
-      if (!this.#isError(level) && metadata && Object.keys(metadata).length !== 0) {
+      if (!this._isError(level) && metadata && Object.keys(metadata).length !== 0) {
         const meta = JSON.stringify(metadata);
         result = `${result}. ${meta}`;
       }
@@ -274,14 +274,14 @@ export class LogService {
   /**
    * Get timestamp options. Undefined = toISOString()
    */
-  #getTimestampConsoleOptions(): TimestampOptions | undefined {
+  private _getTimestampConsoleOptions(): TimestampOptions | undefined {
     return this.config.logs.utc ? undefined : { format: 'YYYY-MM-DD HH:mm:ss.SSS' };
   }
 
   /**
    * Timestamp for file
    */
-  #getTimestampFileOptions(): TimestampOptions | undefined {
+  private _getTimestampFileOptions(): TimestampOptions | undefined {
     return this.config.logs.utc ? undefined : { format: 'YYYY-MM-DDTHH:mm:ss.SSSZ' };
   }
 }

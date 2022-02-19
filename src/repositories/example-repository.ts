@@ -1,15 +1,16 @@
+import { Service } from 'typedi';
 import {
   Example,
   IExample,
-} from '../models/example';
+}                  from '../models/example';
 
-class ExampleRepository {
+@Service()
+export class ExampleRepository {
 
   #fakeData: Example[] = [
-      new Example(1, {name: 'one', description: 'one description'}),
-      new Example(2, {name: 'two', description: 'two description'}),
+    new Example(1, { name: 'one', description: 'one description' }),
+    new Example(2, { name: 'two', description: 'two description' }),
   ];
-
 
   findAll(): Example[] {
     return this.#fakeData;
@@ -29,16 +30,16 @@ class ExampleRepository {
 
   update(id: number, data: Partial<IExample>): Example | undefined {
     let example = this.findById(id);
-    if(!example) {
+    if (!example) {
       return undefined;
     }
     example = Object.assign(example, data);
     return example;
   }
 
-  delete(id: number) : Example | undefined {
+  delete(id: number): Example | undefined {
     const index = this.#fakeData.findIndex((e: Example) => e.id === id);
-    if(index === -1) {
+    if (index === -1) {
       return undefined;
     }
     const example = this.findById(id);
@@ -47,7 +48,3 @@ class ExampleRepository {
   }
 
 }
-
-const exampleRepository = new ExampleRepository();
-
-export default exampleRepository;

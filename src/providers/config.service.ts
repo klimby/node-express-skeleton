@@ -19,11 +19,6 @@ export class ConfigService implements AppConfig{
   readonly port: number = 3000;
 
   /**
-   * Router prefix. Default '/api'.
-   */
-  readonly routePrefix: string  = 'api';
-
-  /**
    * App name
    */
   readonly appName: string = 'app';
@@ -58,9 +53,12 @@ export class ConfigService implements AppConfig{
     if (process.env.NODE_ENV === NodeEnv.Development || process.env.NODE_ENV === NodeEnv.Testing) {
       this.#nodeEnv = process.env.NODE_ENV;
     }
-    if (process.env.npm_package_name) {
-      this.appName = process.env.npm_package_name;
+
+    const appName = process.env.HOSTNAME ?? process.env.npm_package_name;
+    if (appName) {
+      this.appName = appName;
     }
+
     if (process.env.npm_package_version) {
       this.version = process.env.npm_package_version;
     }
@@ -71,8 +69,8 @@ export class ConfigService implements AppConfig{
       const locale = process.env.LOCALE.toLowerCase();
       this.locale = locale === Locales.ru ? Locales.ru : Locales.en;
     }
-    if (config.has('routePrefix')) {
-      this.routePrefix = config.get('routePrefix');
+    if (config.has('logs')) {
+      this.logs = config.get('logs');
     }
   }
 

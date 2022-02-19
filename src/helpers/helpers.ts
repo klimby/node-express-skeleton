@@ -3,7 +3,6 @@ import {
   trim,
   truncate,
 } from 'lodash';
-import { AppConfig } from '../types/config-types';
 
 export class Helpers {
 
@@ -12,8 +11,8 @@ export class Helpers {
    * @param req request instance
    * @param appConfig app config
    */
-  static isJsonRequest(req: Request, appConfig: AppConfig): boolean {
-    const apiPrefix = appConfig.routePrefix;
+  static isJsonRequest(req: Request): boolean {
+    const apiPrefix = 'api';
     const isJson = req.header('Content-Type') === 'application/json' && !!req.accepts('application/json');
     return isJson || req.xhr || req.originalUrl.includes(`/${apiPrefix}/`);
   }

@@ -10,12 +10,13 @@ services:
   # The main container datserver. Runs php-fpm
   # Serves as a template for queue containers and scheduler
   #
-  app:
+  &node-server node-server:
     image: klimby/node-express-skeleton:latest
     container_name: node-skeleton
+    hostname: *node-server
     ports: ["3000:3000"]
     volumes:
-      - ./logs:/app/logs
+      - ./logs:/home/node/app/logs
     #  - ./build:/var/www:ro
     networks:
       - node-express

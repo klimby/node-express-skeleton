@@ -4,7 +4,7 @@ process.env.npm_package_name = 'express-skeleton';
 process.env.HOSTNAME = 'node-server';
 module.exports = {
   clearMocks: true,
-  collectCoverage: false,
+  collectCoverage: true,
   collectCoverageFrom: [
     './src/**/*.ts'
   ],

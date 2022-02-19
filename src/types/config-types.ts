@@ -17,11 +17,6 @@ export interface AppConfig {
   readonly port: number;
 
   /**
-   * Router prefix. Default '/api'.
-   */
-  readonly routePrefix: string;
-
-  /**
    * Is production mode
    */
   readonly isProduction: boolean;
@@ -56,11 +51,6 @@ export interface AppConfig {
    */
   readonly locale: Locales;
 
-  /**
-   * Init config. Use in index before all or in tests
-   * @param appConfig partial config (for test cases)
-   */
-  //init(appConfig?: Partial<AppConfig>): void;
 }
 
 /**

@@ -1,7 +1,7 @@
 import { ConfigService } from '../../src/providers/config.service';
 import { AppConfig }     from '../../src/types/config-types';
 
-describe('app config test', () => {
+describe('config service test', () => {
 
   let config: AppConfig;
 
@@ -25,6 +25,10 @@ describe('app config test', () => {
       it('config test', () => {
         expect(config.locale)
             .toEqual('en');
+        expect(config.appName)
+            .toEqual('node-server');
+        expect(config.version)
+            .toEqual('1.0.0');
       });
 
     },

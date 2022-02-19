@@ -7,7 +7,10 @@ import {
   HttpError,
   Middleware,
 }                        from 'routing-controllers';
-import { Service }       from 'typedi';
+import {
+  Container,
+  Service,
+} from 'typedi';
 import { Helpers }       from '../../helpers/helpers';
 import { RequestCodes }  from '../../helpers/request-codes';
 
@@ -24,7 +27,7 @@ export class GlobalErrorHandler implements ExpressErrorMiddlewareInterface {
   ) {}
 
   error(error: Error | HttpError, request: Request, response: Response, next: (err?: Error) => void) {
-    if (Helpers.isJsonRequest(request, this.config)) {
+    if (Helpers.isJsonRequest(request)) {
 
       const httpCode = 'httpCode' in error ? error['httpCode'] : 500;
       if (!error.message) {

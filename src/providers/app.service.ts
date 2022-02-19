@@ -9,8 +9,12 @@ import http                     from 'http';
 import {
   NotFoundError,
   useExpressServer,
+  useContainer
 }                               from 'routing-controllers';
-import { Service }              from 'typedi';
+import {
+  Container,
+  Service,
+} from 'typedi';
 import { Helpers }              from '../helpers/helpers';
 import { ExampleController }    from '../http/controllers/example-controller';
 import { GlobalErrorHandler }   from '../http/middleware/global-error-handler';
@@ -47,18 +51,18 @@ export class AppService {
    * Init routes and middlewares
    */
   #initRoutes(): void {
-
     this.#handleUncaughtException();
     this.#handleUnhandledRejection();
-
     this.express.use(bodyParser.json());
-
     this.#addVersionRoutes();
 
-    const routePrefix = this.config.routePrefix ? `/${this.config.routePrefix}` : '';
+    /**
+     * It is important to set container before any operation you do with routing-controllers, including importing controllers!!!!
+     */
+    useContainer(Container);
 
     useExpressServer(this.express, {
-      routePrefix,
+      routePrefix: '/api',
       classTransformer: true,
       controllers: [ExampleController],
       middlewares: [GlobalErrorHandler],
@@ -67,7 +71,7 @@ export class AppService {
     /**
      * 404 error
      */
-    this.express.use(this.#notFoundHandler);
+    this.express.use(this.#notFoundHandler());
   }
 
   #addVersionRoutes(): void {
@@ -75,7 +79,7 @@ export class AppService {
     this.express.get(reg,  (req: Request, res: Response) => {
       const version = this.config.version;
       const name = this.config.appName;
-      if(Helpers.isJsonRequest(req, this.config)) {
+      if(Helpers.isJsonRequest(req)) {
         res.json({name, version});
       } else {
         res.send(`${name}. v.${version}`);
@@ -87,21 +91,23 @@ export class AppService {
     process.stdout.write('\x1B[2J\x1B[0f');
   }
 
-  #notFoundHandler(req: Request, res: Response, next: NextFunction): void {
-    if (!res.headersSent) {
-      if (Helpers.isJsonRequest(req, this.config)) {
-        const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-        const message = `Path not found: '${req.originalUrl}'!`;
-        const err = new NotFoundError(message);
-        this.log.warning(message, { ip });
-        res.status(err.httpCode)
-            .json(err);
-      } else {
-        res.status(404)
-            .send(
-                '<h1>Page not found on the server</h1>');
+  #notFoundHandler(): (req: Request, res: Response, next: NextFunction) => void {
+    return (req: Request, res: Response, next: NextFunction) => {
+      if (!res.headersSent) {
+        if (Helpers.isJsonRequest(req)) {
+          const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+          const message = `Path not found: '${req.originalUrl}'!`;
+          const err = new NotFoundError(message);
+          this.log.warning(message, { ip });
+          res.status(err.httpCode)
+              .json(err);
+        } else {
+          res.status(404)
+              .send(
+                  '<h1>Page not found on the server</h1>');
+        }
       }
-    }
+    };
   }
 
   /**

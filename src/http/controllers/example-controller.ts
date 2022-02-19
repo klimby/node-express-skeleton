@@ -1,4 +1,4 @@
-import express     from 'express';
+import express               from 'express';
 import 'reflect-metadata';
 import {
   Action,
@@ -11,30 +11,33 @@ import {
   Param,
   Post,
   Put,
-  UseAfter,
-  UseBefore,
-  UseInterceptor,
-}                        from 'routing-controllers';
+}                            from 'routing-controllers';
+import { Service }           from 'typedi';
 import {
   Example,
   ExampleData,
-}                        from '../../models/example';
-import exampleRepository from '../../repositories/example-repository';
+}                            from '../../models/example';
+import { ExampleRepository } from '../../repositories/example-repository';
 import {
   JsonArrayResponse,
   JsonModelResponse,
-}                        from '../../types/common-types';
+}                            from '../../types/common-types';
 
+@Service()
 @JsonController()
 export class ExampleController {
+
+  constructor(
+      private exampleRepository: ExampleRepository,
+  ) {}
 
   /**
    * Get all entities
    */
   @Get('/examples')
   getAll(): JsonArrayResponse<Example> {
-    const data = exampleRepository.findAll();
-    return {data, meta: {}};
+    const data = this.exampleRepository.findAll();
+    return { data, meta: {} };
   }
 
   /**
@@ -45,10 +48,10 @@ export class ExampleController {
   //@UseAfter(loggingAfter)
   //@UseInterceptor(exampleInterceptor)
   @Get('/examples/:id')
-  getOne(@Param('id') id: number): JsonModelResponse<Example>  {
-    let data = exampleRepository.findById(id);
+  getOne(@Param('id') id: number): JsonModelResponse<Example> {
+    let data = this.exampleRepository.findById(id);
     data = this.#handleNotFount(data);
-    return {data, meta: {}};
+    return { data, meta: {} };
   }
 
   /**
@@ -57,8 +60,8 @@ export class ExampleController {
    */
   @Post('/examples')
   create(@Body() example: ExampleData): JsonModelResponse<Example> {
-    const data = exampleRepository.create(example);
-    return {data, meta: {}};
+    const data = this.exampleRepository.create(example);
+    return { data, meta: {} };
   }
 
   /**
@@ -68,9 +71,9 @@ export class ExampleController {
    */
   @Put('/examples/:id')
   update(@Param('id') id: number, @Body() example: ExampleData): JsonModelResponse<Example> {
-    let data = exampleRepository.update(id, example);
+    let data = this.exampleRepository.update(id, example);
     data = this.#handleNotFount(data);
-    return {data, meta: {}};
+    return { data, meta: {} };
   }
 
   /**
@@ -80,7 +83,7 @@ export class ExampleController {
   @Delete('/examples/:id')
   @OnUndefined(204)
   delete(@Param('id') id: number): undefined {
-    const data = exampleRepository.delete(id);
+    const data = this.exampleRepository.delete(id);
     this.#handleNotFount(data);
     return undefined;
   }
@@ -89,8 +92,8 @@ export class ExampleController {
    * Handle not found
    * @param data
    */
-  #handleNotFount<T>(data : T | undefined): T {
-    if(data === undefined) {
+  #handleNotFount<T>(data: T | undefined): T {
+    if (data === undefined) {
       throw new NotFoundError('Model not found');
     }
     return data;
@@ -103,7 +106,7 @@ export class ExampleController {
  * @param content
  */
 export function exampleInterceptor(action: Action, content: any): any {
- // console.log('change response...');
+  // console.log('change response...');
   //  return content;
 }
 

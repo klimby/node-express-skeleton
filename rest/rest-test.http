@@ -48,6 +48,10 @@ Content-Type: application/json
 DELETE http://localhost:3000/api/examples/3
 Content-Type: application/json
 
+### Delete not found example #3
+DELETE http://localhost:3000/api/examples/300
+Content-Type: application/json
+
 
 ### Not found json request
 GET http://localhost:3000/api/asdsd

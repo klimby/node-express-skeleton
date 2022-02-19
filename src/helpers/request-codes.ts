@@ -11,12 +11,12 @@ export class RequestCodes {
    * @param locale locale (ru|en)
    */
   static getRequestByCode(code: number, locale: Locales = Locales.en): string {
-    const requestCodes: Map<number, Lang> = RequestCodes.#getCodes();
+    const requestCodes: Map<number, Lang> = RequestCodes._getCodes();
     const entity = requestCodes.has(code) ? requestCodes.get(code) : { en: 'Internal Server Error', ru: '' };
     return entity ? entity[locale] : '';
   }
 
-  static #getCodes(): Map<number, Lang> {
+  private static _getCodes(): Map<number, Lang> {
     return new Map<number, Lang>([
       [100, { en: 'Continue', ru: 'Продолжайте' }],
       [101, { en: 'Switching Protocols', ru: 'Переключение протоколов' }],
