@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/klimby/node-express-skeleton/compare/v1.0.1...v1.1.0) (2022-02-19)
+
+
+### Features
+
+* add DI ([0c9d90d](https://github.com/klimby/node-express-skeleton/commit/0c9d90d722f3e69cc8362089a732d3ec75a015fc))
+* docker ([f8fe47b](https://github.com/klimby/node-express-skeleton/commit/f8fe47ba41fe60ba1b5443f176f1551e45e31c3b))
+* docker ([54e35d3](https://github.com/klimby/node-express-skeleton/commit/54e35d3c2f1baba1de1aec429b0c5e1a38285ecb))
+* tests ([6f496e6](https://github.com/klimby/node-express-skeleton/commit/6f496e6848e5b7d3c98b1777149a0a06890a92b1))
+
 ### 1.0.1 (2022-02-17)
 
 

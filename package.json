@@ -1,6 +1,6 @@
 {
   "name": "express-skeleton",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Node.js + express + Typescript app skeleton",
   "main": "dist",
   "scripts": {
