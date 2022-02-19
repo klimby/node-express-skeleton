@@ -14,3 +14,27 @@ cd node-express-skeleton
 
 npm install
 ```
+
+## Env variables
+
+```
+NODE_SERVER_PORT=3000
+NODE_ENV=development
+LOCALE=en
+```
+
+## Npm scripts
+
+- **server:watch** - run server in dev mode;
+- **build** - build in `./dist` dir;
+- **lint** - run linter (eslint);
+- **test** - run tests;
+- **test:coverage** - runt tests with coverage.
+- 
+## Make commands
+
+- `make up` - up docker compose in ./docker-test dir;
+- `make down` - down docker compose in ./docker-test dir;
+- `make build` - create image and push to docker hub;
+- `make create` - create image;
+- `make enter` - enter in server container;
